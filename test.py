@@ -1,67 +1,10 @@
-error = "error"
+dict = {'asus ko nvidia geforce rtx 3070 v2 lhr': ('C$1,300', 'Brampton, ON'), 'evga rtx 3070 ti': ('C$1,600', 'Mississauga, ON'), 'nvidia geforce rtx 3070 founders edition bnib sealed': ('  ·', 'Mississauga, ON'), 'nvidia quadro rtx 6000 - 24gb': ('C$3,600', 'Mississauga, ON'), 'graphic card gigabyte geforce rtx 3060 ti gaming oc pro 8g': ('C$1,200', 'Mississauga, ON'), 'brand new sealed evga 3080 ftw3 ultra': ('$2,100', 'Mississauga, ON'), 'asus rog strix 2080 ti oc 11gb': ('C$1,500', 'Brampton, ON'), 'msi rtx 2080 super (read description)': ('C$1,100', 'Mississauga, ON'), 'bnib sealed asus rtx 3060ti oc': ('C$1,200', 'Mississauga, ON'), '*sealed* msi ventus 3x rtx 3060ti gpu lhr': ('C$1,250', 'Toronto, ON'), 'nvidia geforce rtx 3060 ti founders edition bnib sealed': ('  ·', 'Mississauga, ON'), 'geforce rtx 3080 xtreme gigabyte aorus (brand new/sealed)': ('C$2,200', 'Mississauga, ON'), 'evga geforce rtx 2070 super ftw3 ultra gaming': ('C$1,150', 'Mississauga, ON'), '3070 gaming pc': ('C$2,650', 'Mississauga, ON'), 'asus dual geforce rtx 3060': ('C$950', 'Toronto, ON'), 'asus tuf rtx 3070/ryzen 5600x build': ('C$2,500', 'Mississauga, ON'), 'gigabyte geforce rtx 3080 ti gaming oc + gigabyte b550m ds3h ac am4 b550': ('C$2,500', 'Toronto, ON'), 'nvidia 3060 ti asus ko lhr': ('C$1,200', 'Mississauga, ON'), 'brand new msi ventus geforce rtx 3060 ti 8gb - lhr - 2 available': ('C$1,200', 'Mississauga, ON'), 'evga geforce rtx 3080 ftw3 lhr - brand new factory sealed + receipt': ('C$2,100', 'Mississauga, ON'), 'brand new oem rtx 3060ti non-lhr - nvidia gpu video card graphics card': ('C$1,475', 'Mississauga, ON'), '3080 founder edition with receipt ..2750$': ('C$2,750', 'Toronto, ON'), 'asus tuf gaming nvidia geforce rtx 3090 oc edition graphics card- pcie 4.0, 24gb gddr6x': ('C$3,900', 'Mississauga, ON'), 'trade only 5700xt read description': ('Free', 'Mississauga, ON'), 'msi nvidia geforce rtx 3080 ventus 3x plus 10g oc lhr': ('C$1,900', 'Toronto, ON'), 'evga geforce rtx 3090 ftw3 ultra gaming graphics card': ('C$3,700', 'Mississauga, ON'), 'gigabyte gtx 1660ti oc 6g': ('C$675', 'Mississauga, ON'), 'brand new asus tuf gaming geforce rtx 3060 - lhr': ('C$1,000', 'Mississauga, ON'), 'evga geforce rtx 2060 xc gaming 6gb': ('C$799', 'Brampton, ON'), 'msi geforce rtx 2080 ventus 8g': ('C$1,300', 'Toronto, ON'), 'msi ventus oc 3070ti': ('C$1,700', 'Mississauga, ON'), 'zotac rtx 3080ti': ('C$2,250', 'Toronto, ON'), 'brand new asus rtx 3090': ('C$4,000', 'Mississauga, ON'), 'msi geforce rtx 3080 gaming z trio 10g lhr - new factory sealed': ('C$1,950', 'Brampton, ON'), 'amd asus tuf gaming radeon rx 6700 xt oc 12 gb graphics card (tuf-rx6700xt-o12g-gaming)': ('C$1,350', 'Brampton, ON'), 'gtx 1080 (evga)': ('C$750', 'Mississauga, ON'), 'read- 3070 ftw3 ultra- $1250': ('$1', 'Mississauga, ON'), 'sealed msi nvidia geforce rtx 3060 ventus 3x - lhr - 4 available': ('C$1,000', 'Mississauga, ON'), 'brand new asus ko nvidia geforce rtx 3060 ti oc - lhr': ('C$1,200', 'Mississauga, ON'), 'rtx 2080 super gigabyte oc': ('C$1,115', 'Toronto, ON'), 'evga geforce rtx 2080 super xc gaming': ('C$1,400', 'Mississauga, ON'), 'asus rtx 3060 dual': ('  ·', 'Mississauga, ON')}
 
-sep = "--------------------------------------------------"
+import re
 
-item = {}
+def filter_input(test: str) -> int:
+    filtered_input = re.findall("[0-9]", test)
+    val = "".join(filtered_input)
+    return 0 if not val else int(val)
 
-while True:
-    try:
-        itemsInput = input('30 SERIES:\n3090 [1], 3080ti [2], 3080 [3], 3070ti [4], 3070 [5], 3060ti [6], 3060 [7]\n20 '
-                      'SERIES:\n2080ti [8], 2080s [9], 2080 [10], 2070s [11], 2070 [12], 2060s [13], 2060 [14]\n10 '
-                      'SERIES:\n1080ti [15], 1080 [16], 1070ti [17], 1070 [18], 1060 [19]\n>>> ')
-
-        items = list(map(lambda x: int(x), itemsInput.split(",")))
-
-        print(items)
-
-        if 1 in items:
-            item["RTX 3090"] = 3500
-        if 2 in items:
-            item["RTX 3080ti"] = 2500
-        if 3 in items:
-            item["RTX 3080"] = 2000
-        if 4 in items:
-            item["RTX 3070ti"] = 1500
-        if 5 in items:
-            item["RTX 3070"] = 1200
-        if 6 in items:
-            item["RTX 3060ti"] = 1000
-        if 7 in items:
-            item["RTX 3060"] = 900
-        if 8 in items:
-            item["RTX 2080ti"] = 950
-        if 9 in items:
-            item["RTX 2080 super"] = 950
-        if 10 in items:
-            item["RTX 2080"] = 900
-        if 11 in items:
-            item["RTX 2070 super"] = 900
-        if 12 in items:
-            item["RTX 2070"] = 850
-        if 13 in items:
-            item["RTX 2060 super"] = 850
-        if 14 in items:
-            item["RTX 2060"] = 700
-        if 15 in items:
-            item["GTX 1080ti"] = 850
-        if 16 in items:
-            item["GTX 1080"] = 650
-        if 17 in items:
-            item["GTX 1070ti"] = 600
-        if 18 in items:
-            item["GTX 1070"] = 550
-        if 19 in items:
-            item["GTX 1060 6gb"] = 400
-        if item == 20:
-            item = {'RTX 3090': 3500, 'RTX 3080ti': 2500, 'RTX 3080': 2000, 'RTX 3070ti': 1500, 'RTX 3070': 1200, 'RTX 3060ti': 1000, 'RTX 3060': 900, 'RTX 2080ti': 950, 'RTX 2080 super': 950, 'RTX 2080': 900, 'RTX 2070 super': 900, 'RTX 2070': 850, 'RTX 2060 super': 850, 'RTX 2060': 700, 'GTX 1080ti': 850, 'GTX 1080': 650, 'GTX 1070ti': 600, 'GTX 1070': 550, 'GTX 1060 6gb': 400}
-
-        break
-    except:
-        print(sep)
-        print(error)
-        print(sep)
-
-for name, price in item.items():
-    print(name)
-
-    print(price)
+print(filter_input("·"))
