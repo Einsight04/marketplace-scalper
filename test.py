@@ -1,10 +1,17 @@
-dict = {'asus ko nvidia geforce rtx 3070 v2 lhr': ('C$1,300', 'Brampton, ON'), 'evga rtx 3070 ti': ('C$1,600', 'Mississauga, ON'), 'nvidia geforce rtx 3070 founders edition bnib sealed': ('  ·', 'Mississauga, ON'), 'nvidia quadro rtx 6000 - 24gb': ('C$3,600', 'Mississauga, ON'), 'graphic card gigabyte geforce rtx 3060 ti gaming oc pro 8g': ('C$1,200', 'Mississauga, ON'), 'brand new sealed evga 3080 ftw3 ultra': ('$2,100', 'Mississauga, ON'), 'asus rog strix 2080 ti oc 11gb': ('C$1,500', 'Brampton, ON'), 'msi rtx 2080 super (read description)': ('C$1,100', 'Mississauga, ON'), 'bnib sealed asus rtx 3060ti oc': ('C$1,200', 'Mississauga, ON'), '*sealed* msi ventus 3x rtx 3060ti gpu lhr': ('C$1,250', 'Toronto, ON'), 'nvidia geforce rtx 3060 ti founders edition bnib sealed': ('  ·', 'Mississauga, ON'), 'geforce rtx 3080 xtreme gigabyte aorus (brand new/sealed)': ('C$2,200', 'Mississauga, ON'), 'evga geforce rtx 2070 super ftw3 ultra gaming': ('C$1,150', 'Mississauga, ON'), '3070 gaming pc': ('C$2,650', 'Mississauga, ON'), 'asus dual geforce rtx 3060': ('C$950', 'Toronto, ON'), 'asus tuf rtx 3070/ryzen 5600x build': ('C$2,500', 'Mississauga, ON'), 'gigabyte geforce rtx 3080 ti gaming oc + gigabyte b550m ds3h ac am4 b550': ('C$2,500', 'Toronto, ON'), 'nvidia 3060 ti asus ko lhr': ('C$1,200', 'Mississauga, ON'), 'brand new msi ventus geforce rtx 3060 ti 8gb - lhr - 2 available': ('C$1,200', 'Mississauga, ON'), 'evga geforce rtx 3080 ftw3 lhr - brand new factory sealed + receipt': ('C$2,100', 'Mississauga, ON'), 'brand new oem rtx 3060ti non-lhr - nvidia gpu video card graphics card': ('C$1,475', 'Mississauga, ON'), '3080 founder edition with receipt ..2750$': ('C$2,750', 'Toronto, ON'), 'asus tuf gaming nvidia geforce rtx 3090 oc edition graphics card- pcie 4.0, 24gb gddr6x': ('C$3,900', 'Mississauga, ON'), 'trade only 5700xt read description': ('Free', 'Mississauga, ON'), 'msi nvidia geforce rtx 3080 ventus 3x plus 10g oc lhr': ('C$1,900', 'Toronto, ON'), 'evga geforce rtx 3090 ftw3 ultra gaming graphics card': ('C$3,700', 'Mississauga, ON'), 'gigabyte gtx 1660ti oc 6g': ('C$675', 'Mississauga, ON'), 'brand new asus tuf gaming geforce rtx 3060 - lhr': ('C$1,000', 'Mississauga, ON'), 'evga geforce rtx 2060 xc gaming 6gb': ('C$799', 'Brampton, ON'), 'msi geforce rtx 2080 ventus 8g': ('C$1,300', 'Toronto, ON'), 'msi ventus oc 3070ti': ('C$1,700', 'Mississauga, ON'), 'zotac rtx 3080ti': ('C$2,250', 'Toronto, ON'), 'brand new asus rtx 3090': ('C$4,000', 'Mississauga, ON'), 'msi geforce rtx 3080 gaming z trio 10g lhr - new factory sealed': ('C$1,950', 'Brampton, ON'), 'amd asus tuf gaming radeon rx 6700 xt oc 12 gb graphics card (tuf-rx6700xt-o12g-gaming)': ('C$1,350', 'Brampton, ON'), 'gtx 1080 (evga)': ('C$750', 'Mississauga, ON'), 'read- 3070 ftw3 ultra- $1250': ('$1', 'Mississauga, ON'), 'sealed msi nvidia geforce rtx 3060 ventus 3x - lhr - 4 available': ('C$1,000', 'Mississauga, ON'), 'brand new asus ko nvidia geforce rtx 3060 ti oc - lhr': ('C$1,200', 'Mississauga, ON'), 'rtx 2080 super gigabyte oc': ('C$1,115', 'Toronto, ON'), 'evga geforce rtx 2080 super xc gaming': ('C$1,400', 'Mississauga, ON'), 'asus rtx 3060 dual': ('  ·', 'Mississauga, ON')}
+listingDict = {'brand new asus tuf gaming geforce rtx 3060 - lhr': 1000, 'sealed msi nvidia geforce rtx 3060 ventus 3x - lhr - 4 available': 1000, 'brand new evga geforce rtx 3060 xc gaming - lhr': 1000, 'evga 3060 xc lightly used !': 950, 'gigabyte geforce rtx 3060 brand new/sealed triple fan, rgb': 1000, 'msi 3060': 150, 'new sealed asus phoenix geforce rtx 3060 v2': 900}
 
-import re
+priceLowest = 200
+listOfValues = []
 
-def filter_input(test: str) -> int:
-    filtered_input = re.findall("[0-9]", test)
-    val = "".join(filtered_input)
-    return 0 if not val else int(val)
+listingDict = ({k: v for k, v in listingDict.items() if v >= priceLowest})
 
-print(filter_input("·"))
+for key, value in listingDict.items():
+    listOfValues.append(value)
+
+listOfValues = sorted(listOfValues)[:2]
+
+priceHighest = listOfValues[1]
+
+listingDict = ({k: v for k, v in listingDict.items() if v <= priceHighest})
+
+print(listingDict)

@@ -7,6 +7,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
+# Main
+priceLowest = 0
 
 # Discord
 client = commands.Bot(command_prefix='!')
@@ -29,14 +31,15 @@ def filter_input(test: str) -> str:
 
 
 async def run_scalper(channel):
-    global step2, item, cityInclusions
+    global step2, item, priceLowest, cityInclusions
 
     # Discord
     step2 = 1
 
     # Items
-    itemsFinal = []
-    priceLowest = 350
+    listingDict = {}
+    listingDictFinal = {}
+    listOfValues = []
 
     # Information Var
     phoneNumber = "6478852142"
@@ -69,7 +72,7 @@ async def run_scalper(channel):
 
     time.sleep(delayMedium)
 
-    for name, priceHighest in item.items():
+    for name in item:
         # Marketplace Searchbar
         searchbar = driver.find_element(By.XPATH, "//input[@placeholder='Search Marketplace']")
         searchbar.send_keys(Keys.CONTROL, 'a')
@@ -86,7 +89,7 @@ async def run_scalper(channel):
 
         time.sleep(delayMedium)
 
-        listingDict = {}
+
 
         adInfo = driver.find_elements(By.XPATH,
                                       ".//div[@class='rq0escxv j83agx80 cbu4d94t i1fnvgqd muag1w35 pybr56ya f10w8fjw "
@@ -189,19 +192,31 @@ async def run_scalper(channel):
                        listingDict.items() if
                        any(i in v[1] for i in cityInclusions) and "·" not in v[0] and "Free" not in v[0]}
 
-        
-
         for k, v in listingDict.items():
             listingDict[k] = v[0]
 
-        listingDict = ({k: v for k, v in listingDict.items() if priceHighest >= v >= priceLowest})
+        listingDict = ({k: v for k, v in listingDict.items() if v >= priceLowest})
 
-    embed = discord.Embed(title="Search Results", description=f"{'no results' if not listingDict else ' '}", color=0x0084ff)
+        for key, value in listingDict.items():
+            listOfValues.append(value)
 
-    for card, price1 in listingDict.items():
+        listOfValues = sorted(listOfValues)[:3]
+
+        priceHighest = listOfValues[2]
+
+        listingDict = ({k: v for k, v in listingDict.items() if v <= priceHighest})
+
+        listingDictFinal.update(listingDict)
+
+    embed = discord.Embed(title="Search Results", description=f"{'no results' if not listingDictFinal else ' '}",
+                          color=0x0084ff)
+
+    for card, price1 in listingDictFinal.items():
         embed.add_field(name=card, value="$" + str(price1), inline=False)
 
     await channel.send(embed=embed)
+
+    print(listingDict)
 
     driver.quit()
 
@@ -213,9 +228,9 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    global step1, step2, error, cityInclusions, item
+    global step1, step2, error, cityInclusions, item, priceLowest
     channel = client.get_channel(channelId)
-    if message.content == "!scalper":
+    if message.content == "!scalpy" or message.content == "!Scalpy" or message.content == "!SCALPY":
         embed = discord.Embed(title='Location Paramters:', color=0x0084ff)
         embed.add_field(name="Mississauga", value="1", inline=False)
         embed.add_field(name="Brampton", value="2", inline=False)
@@ -226,12 +241,15 @@ async def on_message(message):
         await channel.send(embed=embed)
 
         step1 = 1
-    if message.content.startswith("search: ") and step1 == 1:
+    elif message.content.startswith("search: ") or message.content.startswith("Search: ") or message.content.startswith(
+            "SEARCH: ") and step1 == 1:
 
         inclusionsInput = message.content[8:]
 
         while True:
             try:
+                cityInclusions = []
+
                 inclusions = list(map(lambda x: int(x), inclusionsInput.split(",")))
 
                 if 1 in inclusions:
@@ -277,72 +295,154 @@ async def on_message(message):
                 step2 = 1
 
                 break
-            except:
-                await channel.send(error)
+            except Exception as e:
+                embed = discord.Embed(title=error, description=e, color=0x0084ff)
+                await channel.send(embed=embed)
+
+                break
+    elif message.content.startswith("search.c: ") or message.content.startswith(
+            "Search.c: ") or message.content.startswith("SEARCH.C: ") and step1 == 1:
+
+        inclusionsInput = message.content[10:]
+        while True:
+            try:
+                cityInclusions = []
+
+                cityInclusions = list(map(lambda x: x, inclusionsInput.split(",")))
+
+                cityInclusions = [city.title() for city in cityInclusions]
+
+                joined_string = ", ".join(cityInclusions)
+                embed = discord.Embed(title="Search results within " + joined_string + " will be displayed.",
+                                      color=0x0084ff)
+                await channel.send(embed=embed)
+
+                embed = discord.Embed(title='Item Parameters:', color=0x0084ff)
+                embed.add_field(name="3090", value="1", inline=True)
+                embed.add_field(name="3080ti", value="2", inline=True)
+                embed.add_field(name="3080", value="3", inline=True)
+                embed.add_field(name="3070ti", value="4", inline=True)
+                embed.add_field(name="3070", value="5", inline=True)
+                embed.add_field(name="3060ti", value="6", inline=True)
+                embed.add_field(name="3060", value="7", inline=True)
+                embed.add_field(name="2080ti", value="8", inline=True)
+                embed.add_field(name="2080s", value="9", inline=True)
+                embed.add_field(name="2080", value="10", inline=True)
+                embed.add_field(name="2070s", value="11", inline=True)
+                embed.add_field(name="2070", value="12", inline=True)
+                embed.add_field(name="2060s", value="13", inline=True)
+                embed.add_field(name="2060", value="14", inline=True)
+                embed.add_field(name="1080ti", value="15", inline=True)
+                embed.add_field(name="1080", value="16", inline=True)
+                embed.add_field(name="1070ti", value="17", inline=True)
+                embed.add_field(name="1070", value="18", inline=True)
+                embed.add_field(name="All", value="19", inline=False)
+                embed.set_footer(text='EX: item: 1, 2, 3')
+                await channel.send(embed=embed)
+
+                step1 = 0
+                step2 = 1
+
+                break
+            except Exception as e:
+                embed = discord.Embed(title=error, description=e, color=0x0084ff)
+                await channel.send(embed=embed)
+
                 break
 
-    if message.content.startswith("item: ") and step2 == 1:
+    elif message.content.startswith("item: ") or message.content.startswith("Item: ") or message.content.startswith(
+            "ITEM: ") and step2 == 1:
 
         itemsInput = message.content[6:]
 
         while True:
             try:
+                item = []
+                priceLowest = 300
+
                 items = list(map(lambda x: int(x), itemsInput.split(",")))
 
                 if 1 in items:
-                    item["RTX 3090"] = 2500
+                    item.append("RTX 3090")
                 if 2 in items:
-                    item["RTX 3080ti"] = 1800
+                    item.append("RTX 3080ti")
                 if 3 in items:
-                    item["RTX 3080"] = 1500
+                    item.append("RTX 3080")
                 if 4 in items:
-                    item["RTX 3070ti"] = 1300
+                    item.append("RTX 3070ti")
                 if 5 in items:
-                    item["RTX 3070"] = 1100
+                    item.append("RTX 3070")
                 if 6 in items:
-                    item["RTX 3060ti"] = 1000
+                    item.append("RTX 3060ti")
                 if 7 in items:
-                    item["RTX 3060"] = 900
+                    item.append("RTX 3060")
                 if 8 in items:
-                    item["RTX 2080ti"] = 950
+                    item.append("RTX 2080ti")
                 if 9 in items:
-                    item["RTX 2080 super"] = 950
+                    item.append("RTX 2080 super")
                 if 10 in items:
-                    item["RTX 2080"] = 900
+                    item.append("RTX 2080")
                 if 11 in items:
-                    item["RTX 2070 super"] = 900
+                    item.append("RTX 2070 super")
                 if 12 in items:
-                    item["RTX 2070"] = 850
+                    item.append("RTX 2070")
                 if 13 in items:
-                    item["RTX 2060 super"] = 850
+                    item.append("RTX 2060 super")
                 if 14 in items:
-                    item["RTX 2060"] = 700
+                    item.append("RTX 2060")
                 if 15 in items:
-                    item["GTX 1080ti"] = 850
+                    item.append("GTX 1080ti")
                 if 16 in items:
-                    item["GTX 1080"] = 650
+                    item.append("GTX 1080")
                 if 17 in items:
-                    item["GTX 1070ti"] = 600
+                    item.append("GTX 1070ti")
                 if 18 in items:
-                    item["GTX 1070"] = 550
+                    item.append("GTX 1070")
                 if 19 in items:
-                    item = {'RTX 3090': 2500, 'RTX 3080ti': 1800, 'RTX 3080': 1500, 'RTX 3070ti': 1300,
-                            'RTX 3070': 1100,
-                            'RTX 3060ti': 1000, 'RTX 3060': 900, 'RTX 2080ti': 950, 'RTX 2080 super': 950,
-                            'RTX 2080': 900,
-                            'RTX 2070 super': 900, 'RTX 2070': 850, 'RTX 2060 super': 850, 'RTX 2060': 700,
-                            'GTX 1080ti': 850,
-                            'GTX 1080': 650, 'GTX 1070ti': 600, 'GTX 1070': 550}
+                    item = ['RTX 3090', 'RTX 3080ti', 'RTX 3080', 'RTX 3070ti', 'RTX 3070',
+                            'RTX 3060ti', 'RTX 3060', 'RTX 2080ti', 'RTX 2080 super', 'RTX 2080',
+                            'RTX 2070 super', 'RTX 2070', 'RTX 2060 super', 'RTX 2060', 'GTX 1080ti',
+                            'GTX 1080', 'GTX 1070ti', 'GTX 1070']
 
                 joined_string = ", ".join(item)
-                embed = discord.Embed(title="Searching for:", description=joined_string, descolor=0x0084ff)
+                embed = discord.Embed(title="Searching for:", description=joined_string, color=0x0084ff)
                 await channel.send(embed=embed)
 
                 await run_scalper(channel)
 
                 break
-            except Exception as e:
-                await channel.send(e)
+            except:
+                embed = discord.Embed(title="Search Results",
+                                      description="No Results Found",
+                                      color=0x0084ff)
+                await channel.send(embed=embed)
+
+                break
+    elif message.content.startswith("item.c: ") or message.content.startswith("Item.c: ") or message.content.startswith(
+            "ITEM.c: ") and step2 == 1:
+
+        itemsInput = message.content[8:]
+
+        while True:
+            try:
+                item = []
+                priceLowest = 25
+
+                item = list(map(lambda x: x, itemsInput.split(",")))
+
+                joined_string = ", ".join(item)
+                embed = discord.Embed(title="Searching for:", description=joined_string, color=0x0084ff)
+                await channel.send(embed=embed)
+
+                await run_scalper(channel)
+
+                break
+            except:
+                embed = discord.Embed(title="Search Results",
+                                      description="No Results Found",
+                                      color=0x0084ff)
+                await channel.send(embed=embed)
+
                 break
 
 
