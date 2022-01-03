@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
 # Main
+color = 0x0084ff
 priceLowest = 0
 
 # Discord
@@ -24,6 +25,15 @@ cityInclusions = []
 error = "Error, try again."
 
 
+def find_between(message, first, last):
+    try:
+        start = message.index(first) + len(first)
+        end = message.index(last, start)
+        return message[start:end]
+    except ValueError:
+        return ""
+
+
 def filter_input(test: str) -> str:
     filtered_input = re.findall("[0-9,]", test)
     val = "".join(filtered_input)
@@ -31,7 +41,7 @@ def filter_input(test: str) -> str:
 
 
 async def run_scalper(channel):
-    global step2, item, priceLowest, cityInclusions
+    global step2, item, priceLowest, cityInclusions, keywordKeep, keywordRemove
 
     # Discord
     step2 = 1
@@ -88,8 +98,6 @@ async def run_scalper(channel):
             url2 = driver.current_url
 
         time.sleep(delayMedium)
-
-
 
         adInfo = driver.find_elements(By.XPATH,
                                       ".//div[@class='rq0escxv j83agx80 cbu4d94t i1fnvgqd muag1w35 pybr56ya f10w8fjw "
@@ -186,6 +194,9 @@ async def run_scalper(channel):
                     pass
                 else:
                     del listingDict[text]
+            else:
+                if keywordKeep not in text or keywordRemove in text:
+                    del listingDict[text]
 
         listingDict = {k: (int(part.replace(",", "") if "," in (part := filter_input(v[0])) else part), v[1]) for
                        k, v in
@@ -209,14 +220,12 @@ async def run_scalper(channel):
         listingDictFinal.update(listingDict)
 
     embed = discord.Embed(title="Search Results", description=f"{'no results' if not listingDictFinal else ' '}",
-                          color=0x0084ff)
+                          color=color)
 
     for card, price1 in listingDictFinal.items():
         embed.add_field(name=card, value="$" + str(price1), inline=False)
 
     await channel.send(embed=embed)
-
-    print(listingDict)
 
     driver.quit()
 
@@ -228,10 +237,10 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    global step1, step2, error, cityInclusions, item, priceLowest
+    global step1, step2, error, cityInclusions, item, priceLowest, keywordKeep, keywordRemove
     channel = client.get_channel(channelId)
     if message.content == "!scalpy" or message.content == "!Scalpy" or message.content == "!SCALPY":
-        embed = discord.Embed(title='Location Paramters:', color=0x0084ff)
+        embed = discord.Embed(title='Location Paramters:', color=color)
         embed.add_field(name="Mississauga", value="1", inline=False)
         embed.add_field(name="Brampton", value="2", inline=False)
         embed.add_field(name="Oakville", value="3", inline=False)
@@ -265,10 +274,10 @@ async def on_message(message):
 
                 joined_string = ", ".join(cityInclusions)
                 embed = discord.Embed(title="Search results within " + joined_string + " will be displayed.",
-                                      color=0x0084ff)
+                                      color=color)
                 await channel.send(embed=embed)
 
-                embed = discord.Embed(title='Item Parameters:', color=0x0084ff)
+                embed = discord.Embed(title='Item Parameters:', color=color)
                 embed.add_field(name="3090", value="1", inline=True)
                 embed.add_field(name="3080ti", value="2", inline=True)
                 embed.add_field(name="3080", value="3", inline=True)
@@ -296,7 +305,7 @@ async def on_message(message):
 
                 break
             except Exception as e:
-                embed = discord.Embed(title=error, description=e, color=0x0084ff)
+                embed = discord.Embed(title=error, description=e, color=color)
                 await channel.send(embed=embed)
 
                 break
@@ -314,10 +323,10 @@ async def on_message(message):
 
                 joined_string = ", ".join(cityInclusions)
                 embed = discord.Embed(title="Search results within " + joined_string + " will be displayed.",
-                                      color=0x0084ff)
+                                      color=color)
                 await channel.send(embed=embed)
 
-                embed = discord.Embed(title='Item Parameters:', color=0x0084ff)
+                embed = discord.Embed(title='Item Parameters:', color=color)
                 embed.add_field(name="3090", value="1", inline=True)
                 embed.add_field(name="3080ti", value="2", inline=True)
                 embed.add_field(name="3080", value="3", inline=True)
@@ -345,7 +354,7 @@ async def on_message(message):
 
                 break
             except Exception as e:
-                embed = discord.Embed(title=error, description=e, color=0x0084ff)
+                embed = discord.Embed(title=error, description=e, color=color)
                 await channel.send(embed=embed)
 
                 break
@@ -405,7 +414,7 @@ async def on_message(message):
                             'GTX 1080', 'GTX 1070ti', 'GTX 1070']
 
                 joined_string = ", ".join(item)
-                embed = discord.Embed(title="Searching for:", description=joined_string, color=0x0084ff)
+                embed = discord.Embed(title="Searching for:", description=joined_string, color=color)
                 await channel.send(embed=embed)
 
                 await run_scalper(channel)
@@ -414,7 +423,7 @@ async def on_message(message):
             except:
                 embed = discord.Embed(title="Search Results",
                                       description="No Results Found",
-                                      color=0x0084ff)
+                                      color=color)
                 await channel.send(embed=embed)
 
                 break
@@ -428,10 +437,16 @@ async def on_message(message):
                 item = []
                 priceLowest = 25
 
-                item = list(map(lambda x: x, itemsInput.split(",")))
+                if '"' in itemsInput:
+                    keywordKeep = (find_between(itemsInput.lower(), '"', '"'))
+                if '[' and ']' in itemsInput:
+                    keywordRemove = (find_between(itemsInput.lower(), '[', ']'))
+
+                itemsInput = itemsInput.replace('"', '')
+                item = itemsInput.split(", ")
 
                 joined_string = ", ".join(item)
-                embed = discord.Embed(title="Searching for:", description=joined_string, color=0x0084ff)
+                embed = discord.Embed(title="Searching for:", description=joined_string, color=color)
                 await channel.send(embed=embed)
 
                 await run_scalper(channel)
@@ -440,7 +455,7 @@ async def on_message(message):
             except:
                 embed = discord.Embed(title="Search Results",
                                       description="No Results Found",
-                                      color=0x0084ff)
+                                      color=color)
                 await channel.send(embed=embed)
 
                 break
