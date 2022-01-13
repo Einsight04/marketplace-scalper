@@ -23,6 +23,7 @@ cityInclusions = []
 
 # Error Var
 error = "Error, try again."
+errorEmpty = "No Results Found"
 
 
 def find_between(message, first, last):
@@ -41,7 +42,7 @@ def filter_input(test: str) -> str:
 
 
 async def run_scalper(channel):
-    global step2, item, priceLowest, cityInclusions, keywordKeep, keywordRemove
+    global step2, item, priceLowest, cityInclusions, keywordKeep
 
     # Discord
     step2 = 1
@@ -104,10 +105,7 @@ async def run_scalper(channel):
                                       "k4urcfbm c7r68pdi suyy3zvx']")
 
         for ad in adInfo:
-            price = ad.find_element(By.XPATH,
-                                    ".//span[@class='d2edcug0 hpfvmrgz qv66sw1b c1et5uql lr9zc1uh a8c37x1j keod5gw0 "
-                                    "nxhoafnm aigsh9s9 fe6kdd0r mau55g9w c8b282yb d3f4x2em mdeji52x a5q79mjw g1cxx5fr "
-                                    "lrazzd5p oo9gr5id']").text
+            price = ad.find_element(By.XPATH, ".//span[@class='d2edcug0 hpfvmrgz qv66sw1b c1et5uql lr9zc1uh a8c37x1j fe6kdd0r mau55g9w c8b282yb keod5gw0 nxhoafnm aigsh9s9 d3f4x2em mdeji52x a5q79mjw g1cxx5fr lrazzd5p oo9gr5id']").text
             title = ad.find_element(By.XPATH, "..//span[@class='a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7']").text
             location = ad.find_element(By.XPATH, ".//span[@class='a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7 ltmttdrg "
                                                  "g0qnabr5 ojkyduve']").text
@@ -195,12 +193,10 @@ async def run_scalper(channel):
                 else:
                     del listingDict[text]
             else:
-                if keywordKeep not in text or keywordRemove in text:
+                if keywordKeep not in text:
                     del listingDict[text]
 
-        listingDict = {k: (int(part.replace(",", "") if "," in (part := filter_input(v[0])) else part), v[1]) for
-                       k, v in
-                       listingDict.items() if
+        listingDict = {k: (int(part.replace(",", "") if "," in (part := filter_input(v[0])) else part), v[1]) for k, v in listingDict.items() if
                        any(i in v[1] for i in cityInclusions) and "·" not in v[0] and "Free" not in v[0]}
 
         for k, v in listingDict.items():
@@ -218,6 +214,8 @@ async def run_scalper(channel):
         listingDict = ({k: v for k, v in listingDict.items() if v <= priceHighest})
 
         listingDictFinal.update(listingDict)
+
+        print(listingDictFinal)
 
     embed = discord.Embed(title="Search Results", description=f"{'no results' if not listingDictFinal else ' '}",
                           color=color)
@@ -237,7 +235,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    global step1, step2, error, cityInclusions, item, priceLowest, keywordKeep, keywordRemove
+    global step1, step2, error, errorEmpty, cityInclusions, item, priceLowest, keywordKeep
     channel = client.get_channel(channelId)
     if message.content == "!scalpy" or message.content == "!Scalpy" or message.content == "!SCALPY":
         embed = discord.Embed(title='Location Paramters:', color=color)
@@ -420,9 +418,9 @@ async def on_message(message):
                 await run_scalper(channel)
 
                 break
-            except:
+            except Exception as e:
                 embed = discord.Embed(title="Search Results",
-                                      description="No Results Found",
+                                      description=errorEmpty,
                                       color=color)
                 await channel.send(embed=embed)
 
@@ -439,8 +437,6 @@ async def on_message(message):
 
                 if '"' in itemsInput:
                     keywordKeep = (find_between(itemsInput.lower(), '"', '"'))
-                if '[' and ']' in itemsInput:
-                    keywordRemove = (find_between(itemsInput.lower(), '[', ']'))
 
                 itemsInput = itemsInput.replace('"', '')
                 item = itemsInput.split(", ")
@@ -452,9 +448,9 @@ async def on_message(message):
                 await run_scalper(channel)
 
                 break
-            except:
+            except Exception as e:
                 embed = discord.Embed(title="Search Results",
-                                      description="No Results Found",
+                                      description=errorEmpty,
                                       color=color)
                 await channel.send(embed=embed)
 
