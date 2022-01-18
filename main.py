@@ -192,9 +192,11 @@ async def run_scalper(channel):
                     pass
                 else:
                     del listingDict[text]
-            else:
+            elif keywordKeep != "":
                 if keywordKeep not in text:
                     del listingDict[text]
+
+        print(listingDict)
 
         listingDict = {k: (int(part.replace(",", "") if "," in (part := filter_input(v[0])) else part), v[1]) for k, v in listingDict.items() if
                        any(i in v[1] for i in cityInclusions) and "·" not in v[0] and "Free" not in v[0]}
@@ -434,6 +436,7 @@ async def on_message(message):
             try:
                 item = []
                 priceLowest = 25
+                keywordKeep = ""
 
                 if '"' in itemsInput:
                     keywordKeep = (find_between(itemsInput.lower(), '"', '"'))
